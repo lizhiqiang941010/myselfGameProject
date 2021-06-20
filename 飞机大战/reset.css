@@ -1,0 +1,46 @@
+/* 清除浏览器对标签的默认样式 */
+html,body{
+    width: 100%;
+    height: 100%;
+}
+*{
+    margin: 0;
+    padding: 0;
+   
+}
+a{
+    text-decoration: none;
+    color: black;
+}
+ul,li{
+    list-style: none;
+}
+h1,h2,h3,h4,h5,h6{
+    font-size: 16px;
+    font-weight: normal;
+}
+b,strong{
+    font-weight: normal;
+}
+em,i{
+    font-style: normal;
+}
+table,tr{
+   
+    /* 
+        单元格和单元格之间的间距为0；cellspacing
+        border-collapse:设置两个单元格的边框合为一个；
+        
+    */
+    border-collapse: collapse;
+}
+
+.clearfix::after{
+    content: "";
+    display: block;
+    clear: both;
+}
+input{
+    border: none;
+    outline: none;
+}

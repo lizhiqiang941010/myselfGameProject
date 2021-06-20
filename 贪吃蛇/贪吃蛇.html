@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .wall {
+            width: 800px;
+            height: 600px;
+            border: 1px solid black;
+            position: relative;
+            font-size: 50px;
+            font-weight: bold;
+            line-height: 600px;
+            text-align: center;
+            color: red;
+        }
+
+        .snake {
+            font-size: 0px;
+        }
+
+        .snake span {
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            display: inline-block;
+            position: absolute;
+        }
+
+        .sorce {
+            width: 200px;
+            height: 50px;
+            border: red 1px solid;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="margin-top: 20px;">游戏开发者：李志强 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 游戏规则：按方向键控制方向，碰到墙壁或者自己游戏结束，刷新页面游戏重新开始
+    </div>
+
+    <div class="wall">
+        <div class="snake">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+    </div>
+    <div class="sorce">您的得分：0</div>
+
+    <script>
+        // 存放每一个部位的数组
+        let arr = [{ "top": 0, "left": 0 }, { "top": 0, "left": 10 }, { "top": 0, "left": 20 }, { "top": 0, "left": 30 }];
+        let snake = document.getElementsByClassName("snake")[0];
+        let wall = document.getElementsByClassName("wall")[0];
+        let sorce = document.getElementsByClassName("sorce")[0];
+        // 蛇的移动方向，初始向右
+        let direction = "right";
+        // 头部最新的位置
+        let newposition = null;
+        let timer = null;
+        let sorceData = 0;
+        let flag = true;
+
+        // 监听改变方向
+        document.onkeydown = function (e) {
+            // 移动方向不能反向
+            if (flag) {
+                if (direction === "right" && e.keyCode === 37) {
+                    return;
+                }
+                if (direction === "left" && e.keyCode === 39) {
+                    return;
+                }
+                if (direction === "top" && e.keyCode === 40) {
+                    return;
+                }
+                if (direction === "bottom" && e.keyCode === 38) {
+                    return;
+                }
+                // 根据键位改变移动方向
+                if (e.keyCode === 37) {
+                    direction = "left";
+                }
+                if (e.keyCode === 38) {
+                    direction = "top";
+                }
+                if (e.keyCode === 39) {
+                    direction = "right";
+                }
+                if (e.keyCode === 40) {
+                    direction = "bottom";
+                }
+            }
+
+            flag = false;
+            setTimeout(function () {
+                flag = true;
+            }, 50)
+        };
+
+        // 进行位置分配的函数
+        function assigningFn() {
+            let snakeBody = document.getElementsByClassName("snake")[0].getElementsByTagName("span");
+            for (let i = 0; i < arr.length; i++) {
+                snakeBody[i].style.top = arr[i].top + "px";
+                snakeBody[i].style.left = arr[i].left + "px";
+            }
+        };
+        // 初始时分配位置
+        assigningFn();
+
+        // 判断下一个前进部位的函数
+        function newPosition() {
+            if (direction === "right") {
+                newposition = { "top": arr[arr.length - 1].top, "left": arr[arr.length - 1].left + 10 };
+            } else if (direction === "left") {
+                newposition = { "top": arr[arr.length - 1].top, "left": arr[arr.length - 1].left - 10 };
+            } else if (direction === "top") {
+                newposition = { "top": arr[arr.length - 1].top - 10, "left": arr[arr.length - 1].left };
+            } else {
+                newposition = { "top": arr[arr.length - 1].top + 10, "left": arr[arr.length - 1].left };
+            }
+        }
+
+        // 生成食物实例
+        function Food() {
+            let foodPosition = { "top": Math.random() * 580, "left": Math.random() * 780 };
+            let food = document.createElement("div");
+            food.classList.add("food");
+            food.style.width = "10px";
+            food.style.height = "10px";
+            food.style.background = "red";
+            food.style.position = "absolute";
+            food.style.top = foodPosition.top + "px";
+            food.style.left = foodPosition.left + "px";
+            wall.append(food);
+        }
+        // 蛇头和食物的碰撞检测
+        function eatFood() {
+            let foodList = document.getElementsByClassName("food");
+            //  获取蛇头
+            let snakeHeader = arr[arr.length - 1];
+            let snakeHeaderLeft = snakeHeader.left;
+            let snakeHeaderTop = snakeHeader.top;
+            for (let i = 0; i < foodList.length; i++) {
+                let foodLeft = parseFloat(foodList[i].style.left);
+                let foodTop = parseFloat(foodList[i].style.top);
+                if (snakeHeaderTop + 10 < foodTop || snakeHeaderTop > foodTop + 10 || snakeHeaderLeft > foodLeft + 10 || snakeHeaderLeft + 10 < foodLeft) {
+                    //没有发生碰撞
+                } else {
+                    // 发生碰撞
+                    // 移除被吃的食物
+                    foodList[i].remove();
+                    // 生成新的尾部
+                    let newBody = document.createElement("span");
+                    newBody.style.width = "10px";
+                    newBody.style.height = "10px";
+                    newBody.style.background = "black";
+                    newBody.style.position = "absolute";
+                    if (direction === "top") {
+                        newBody.style.top = arr[0].top + 10 + "px";
+                        newBody.style.left = arr[0].left + "px";
+                    } else if (direction === "bottom") {
+                        newBody.style.top = arr[0].top - 10 + "px";
+                        newBody.style.left = arr[0].left + "px";
+                    } else if (direction === "right") {
+                        newBody.style.top = arr[0].top + "px";
+                        newBody.style.left = arr[0].left - 10 + "px";
+                    } else {
+                        newBody.style.top = arr[0].top + "px";
+                        newBody.style.left = arr[0].left + 10 + "px";
+                    }
+                    let left = parseFloat(newBody.style.left);
+                    let top = parseFloat(newBody.style.top);
+                    arr.unshift({ "top": top, "left": left });
+                    sorceData += 100;
+                    sorce.innerHTML = "您的得分：" + sorceData;
+                    if (arr.length >= 10 && arr.length < 20) {
+                        stepmove = 70;
+                        clearInterval(timer);
+                        timer = setInterval(function () {
+                            newPosition();
+                            arr.push(newposition);
+                            arr.shift();
+                            assigningFn();
+                        }, stepmove)
+                    } else if (arr.length >= 20 && arr.length < 30) {
+                        stepmove = 60;
+                        clearInterval(timer);
+                        timer = setInterval(function () {
+                            newPosition();
+                            arr.push(newposition);
+                            arr.shift();
+                            assigningFn();
+                        }, stepmove)
+                    } else if (arr.length >= 30 && arr.length < 50) {
+                        stepmove = 50;
+                        clearInterval(timer);
+                        timer = setInterval(function () {
+                            newPosition();
+                            arr.push(newposition);
+                            arr.shift();
+                            assigningFn();
+                        }, stepmove)
+                    } else if (arr.length >= 50) {
+                        stepmove = 30;
+                        clearInterval(timer);
+                        timer = setInterval(function () {
+                            newPosition();
+                            arr.push(newposition);
+                            arr.shift();
+                            assigningFn();
+                        }, stepmove)
+                    }
+                    snake.append(newBody);
+
+                }
+            }
+
+        }
+
+        // 蛇头碰壁检测
+        function hitWall() {
+            //  获取蛇头
+            let snakeHeader = arr[arr.length - 1];
+            let snakeHeaderLeft = snakeHeader.left;
+            let snakeHeaderTop = snakeHeader.top;
+            if (snakeHeaderLeft < 0 || snakeHeaderLeft + 10 > 800 || snakeHeaderTop < 0 || snakeHeaderTop + 10 > 600) {
+                wall.innerHTML = "游戏结束";
+                clearInterval(endgametimer);
+                clearInterval(eatfoodtimer);
+                clearInterval(timer);
+                clearInterval(createFoodtimer);
+            }
+        }
+        // 蛇头和自己身体的碰撞
+        function hitSelf() {
+            //  获取蛇头
+            let snakeHeader = arr[arr.length - 1];
+            let snakeHeaderLeft = snakeHeader.left;
+            let snakeHeaderTop = snakeHeader.top;
+            for (let i = 0; i < arr.length - 4; i++) {
+                let bodyLeft = parseFloat(arr[i].left);
+                let bodyTop = parseFloat(arr[i].top);
+                if (snakeHeaderTop + 10 < bodyTop || snakeHeaderTop > bodyTop + 10 || snakeHeaderLeft > bodyLeft + 10 || snakeHeaderLeft + 10 < bodyLeft) {
+                    // 没有碰撞
+                } else {
+                    // 发生碰撞
+                    wall.innerHTML = "游戏结束";
+                    clearInterval(endgametimer);
+                    clearInterval(eatfoodtimer);
+                    clearInterval(timer);
+                    clearInterval(createFoodtimer);
+                }
+            }
+        }
+
+        // 定时器的部分
+        let stepmove = 100;
+        // // 食物的碰撞观测
+        let eatfoodtimer = setInterval(function () {
+            eatFood();
+        }, 50)
+        // // 游戏结束的观测
+        let endgametimer = setInterval(function () {
+            hitWall();
+            hitSelf();
+        }, 50)
+        // // 定时器控制移动
+        timer = setInterval(function () {
+            newPosition();
+            arr.push(newposition);
+            arr.shift();
+            assigningFn();
+        }, stepmove)
+        // // 生成食物的定时器
+        let createFoodtimer = setInterval(function () {
+            let foodList = document.getElementsByClassName("food");
+            if (foodList.length >= 5) {
+                return;
+            } else {
+                Food();
+            }
+        }, 3000)
+    </script>
+</body>
+
+</html>

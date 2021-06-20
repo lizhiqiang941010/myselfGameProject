@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #wrap {
+            width: 400px;
+            height: 400px;
+            background-color: brown;
+            position: relative;
+        }
+
+        .item {
+            width: 96px;
+            height: 96px;
+            margin: 2px;
+            box-sizing: border-box;
+            background-color: #ccc;
+            float: left;
+            border-radius: 5px;
+            position: absolute;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 100px;
+           transition: all 0.1s linear;
+           background-repeat: no-repeat;
+           background-size: 100px 100px;
+         
+          
+        }
+
+        #p {
+            text-align: center;
+            margin-left: 50px;
+            margin-top: 20px;
+        }
+
+        #p1 {
+            text-align: center;
+            margin-left: 150px;
+            margin-top: 20px;
+        }
+
+        #bu {
+            width: 200px;
+            height: 30px;
+            color: 20px;
+            position: absolute;
+            left: 500px;
+            top: 200px;
+            background-color: brown;
+            line-height: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        #wo {
+            position: absolute;
+            left: 500px;
+            top: 50px;
+            width: 540px;
+            background-color: brown;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+        }
+        .end{
+            width: 500px;
+            height: 100px;
+            background-color:blueviolet;
+            position: absolute;
+            margin-left: 500px;
+            margin-top: 300px;
+            z-index: 999;
+            display: none;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            font-size: 50px;
+            font-weight: bold;
+           
+        }
+    </style>
+</head>
+
+<body>
+    <div class="end">
+        恭喜你游戏胜利
+    </div>
+    <div id="wrap">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+        <div class="item">13</div>
+        <div class="item">14</div>
+        <div class="item">15</div>
+    </div>
+    <input type="button" name="" id="p" value="开始游戏">
+    <input type="button" name="" id="p1" value="返回初始状态">
+    <div id="wo">点击开始游戏后，方块顺序将会打乱，请将方块位置还原到初始状态，本游戏属于智力类游戏，没有外挂，如果发现还原不了的bug，请告知作者。</div>
+    <div id="bu">步数:0</div>
+</body>
+<script src="./ujiuye.js"></script>
+<script src="./jquery-3.0.0.js"></script>
+<script>
+    let arry = [{ 'left': 0, 'top': 0 }, { 'left': 0, 'top': 100 }, { 'left': 0, 'top': 200 }, { 'left': 0, 'top': 300 }, { 'left': 100, 'top': 0 }, { 'left': 100, 'top': 100 }, { 'left': 100, 'top': 200 }, { 'left': 100, 'top': 300 }, { 'left': 200, 'top': 0 }, { 'left': 200, 'top': 100 }, { 'left': 200, 'top': 200 }, { 'left': 200, 'top': 300 }, { 'left': 300, 'top': 0 }, { 'left': 300, 'top': 100 }, { 'left': 300, 'top': 200 }, { 'left': 300, 'top': 300 },]
+    let arry1 = [{ 'left': 300, 'top': 300 }]
+    for (i = 0; i < 15; i++) {
+        $('.item').eq(i).css(arry[i])
+    }
+
+    var num
+    var n = 0
+    var b = document.getElementById('bu')
+    for(let i =0;i<15;i++){
+       
+        $('.item').eq(i).css('background-image','url(./images/古丽娜扎'+(i+1)+'.jpg)')
+    }
+    $('#p').click(function () {
+        n = 0
+        $('.item').css('transition-duration', '0s')
+        b.innerHTML = '步数:0'
+        $('.end').css('display','none')
+        for (var i = 0; i < 1000; i++) {
+
+            num = parseInt(Math.random() * 16)
+            let left = $('.item').eq(num).css('left')
+            let top = $('.item').eq(num).css('top')
+            if (arry1[0].top == parseInt(top) && (arry1[0].left + 100 == parseInt(left) || arry1[0].left - 100 == parseInt(left)) ||
+                arry1[0].left == parseInt(left) && (arry1[0].top + 100 == parseInt(top) || arry1[0].top - 100 == parseInt(top))) {
+                let obj = {
+                    'left': parseInt(left),
+                    'top': parseInt(top)
+                }
+
+                $('.item').eq(num).css(arry1[0])
+                arry1.shift()
+                arry1.push(obj)
+
+            }
+        }
+        $('.item').css('transition-duration', '0.1s')
+
+    })
+
+
+    $('.item').click(function () {
+        let item = document.getElementsByClassName('item')
+        let left = $(this).css('left')
+        let top = $(this).css('top')
+        if (arry1[0].top == parseInt(top) && (arry1[0].left + 100 == parseInt(left) || arry1[0].left - 100 == parseInt(left)) ||
+            arry1[0].left == parseInt(left) && (arry1[0].top + 100 == parseInt(top) || arry1[0].top - 100 == parseInt(top))) {
+            let obj = {
+                'left': parseInt(left),
+                'top': parseInt(top)
+            }
+
+            $(this).css(arry1[0])
+            arry1.shift()
+            arry1.push(obj)
+            n++
+            b.innerHTML = '步数:' + n
+
+        } else if (arry1[0].top == parseInt(top) && (arry1[0].left + 200 == parseInt(left) || arry1[0].left - 200 == parseInt(left))) {
+            for (let i = 0; i < 15; i++) {
+                if (parseInt(item[i].style.top) == parseInt(top) && parseInt(item[i].style.left) == (parseInt(left) + arry1[0].left) / 2) {
+                    let obj = {
+                        'left': parseInt(item[i].style.left),
+                        'top': parseInt(item[i].style.top)
+                    }
+                    $(item[i]).css(arry1[0])
+                    arry1.shift()
+                    arry1.push(obj)
+                    let obj1 = {
+                        'left': parseInt(left),
+                        'top': parseInt(top)
+                    }
+                    $(this).css(arry1[0])
+                    arry1.shift()
+                    arry1.push(obj1)
+                    n++
+                    b.innerHTML = '步数:' + n
+
+                }
+            }
+        } else if (arry1[0].left == parseInt(left) && (arry1[0].top + 200 == parseInt(top) || arry1[0].top - 200 == parseInt(top))) {
+            for (let i = 0; i < 15; i++) {
+                if (parseInt(item[i].style.left) == parseInt(left) && parseInt(item[i].style.top) == (parseInt(top) + arry1[0].top) / 2) {
+                    let obj = {
+                        'left': parseInt(item[i].style.left),
+                        'top': parseInt(item[i].style.top)
+                    }
+                    $(item[i]).css(arry1[0])
+                    arry1.shift()
+                    arry1.push(obj)
+                    let obj1 = {
+                        'left': parseInt(left),
+                        'top': parseInt(top)
+                    }
+                    $(this).css(arry1[0])
+                    arry1.shift()
+                    arry1.push(obj1)
+                    n++
+                    b.innerHTML = '步数:' + n
+
+                }
+            }
+        }else if (arry1[0].top == parseInt(top) && (arry1[0].left + 300 == parseInt(left) || arry1[0].left - 300 == parseInt(left))) {
+            for (let i = 0; i < 15; i++) {
+                if (parseInt(item[i].style.top) == parseInt(top) && (parseInt(item[i].style.left) + 100 == arry1[0].left || parseInt(item[i].style.left) - 100 == arry1[0].left)) {
+                    let obj = {
+                        'left': parseInt(item[i].style.left),
+                        'top': parseInt(item[i].style.top)
+                    }
+                    
+                    $(item[i]).css(arry1[0])
+                   
+                    arry1.push(obj)
+                    arry1.shift()
+                    if (arry1[0].top == parseInt(top) && (arry1[0].left + 200 == parseInt(left) || arry1[0].left - 200 == parseInt(left))) {
+                        for (let i = 0; i < 15; i++) {
+                            if (parseInt(item[i].style.top) == parseInt(top) && parseInt(item[i].style.left) == (parseInt(left) + arry1[0].left) / 2) {
+                                let obj = {
+                                    'left': parseInt(item[i].style.left),
+                                    'top': parseInt(item[i].style.top)
+                                }
+                                $(item[i]).css(arry1[0])
+                                arry1.shift()
+                                arry1.push(obj)
+                                let obj1 = {
+                                    'left': parseInt(left),
+                                    'top': parseInt(top)
+                                }
+                                $(this).css(arry1[0])
+                                arry1.shift()
+                                arry1.push(obj1)
+                                n++
+                                b.innerHTML = '步数:' + n
+
+                            }
+                        }
+                    }
+                    break
+                }
+
+            }
+        }else if (arry1[0].left == parseInt(left) && (arry1[0].top + 300 == parseInt(top) || arry1[0].top - 300 == parseInt(top))) {
+            for (let i = 0; i < 15; i++) {
+                if (parseInt(item[i].style.left) == parseInt(left) && (parseInt(item[i].style.top) + 100 == arry1[0].top || parseInt(item[i].style.top) - 100 == arry1[0].top)) {
+                    let obj = {
+                        'left': parseInt(item[i].style.left),
+                        'top': parseInt(item[i].style.top)
+                    }
+                 
+                    $(item[i]).css(arry1[0])
+                   
+                    arry1.push(obj)
+                    arry1.shift()
+                    if (arry1[0].left == parseInt(left) && (arry1[0].top + 200 == parseInt(top) || arry1[0].top - 200 == parseInt(top))) {
+                        for (let i = 0; i < 15; i++) {
+                            if (parseInt(item[i].style.left) == parseInt(left) && parseInt(item[i].style.top) == (parseInt(top) + arry1[0].top) / 2) {
+                                let obj = {
+                                    'left': parseInt(item[i].style.left),
+                                    'top': parseInt(item[i].style.top)
+                                }
+                                $(item[i]).css(arry1[0])
+                                arry1.shift()
+                                arry1.push(obj)
+                                let obj1 = {
+                                    'left': parseInt(left),
+                                    'top': parseInt(top)
+                                }
+                                $(this).css(arry1[0])
+                                arry1.shift()
+                                arry1.push(obj1)
+                                n++
+                                 b.innerHTML = '步数:' + n
+
+                            }
+                        }
+                    }
+                    break
+                }
+
+            }
+        }
+        let flag = true
+        for (i = 0; i < 15; i++) {
+            // console.log(arry[i].left,parseInt(item[i].style.left ), i);
+         if((parseInt(item[i].style.left ) !== arry[i].left) || (parseInt(item[i].style.top ) !== arry[i].top)){
+               flag =false
+         }
+        }
+        console.log(flag);
+        if(flag == true){
+            $('.end').show()
+            $('.item').css('transition', 'all 0S linear')
+          
+        }
+    })
+
+    $('#p1').click(function () {
+        location.reload()
+    })
+
+</script>
+
+</html>
